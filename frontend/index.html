@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Debate Coach</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>AI Debate Coach</h1>
+    <p>Enter a topic, choose your side, and type your argument to get feedback.</p>
+
+    <form id="debateForm">
+      <label for="topic">Topic</label>
+      <input type="text" id="topic" name="topic" placeholder="e.g. AI should be used in education" required />
+
+      <label for="side">Side</label>
+      <select id="side" name="side" required>
+        <option value="">Select a side</option>
+        <option value="for">For</option>
+        <option value="against">Against</option>
+      </select>
+
+      <label for="argument">Your Argument</label>
+      <textarea id="argument" name="argument" rows="6" placeholder="Type your argument here..." required></textarea>
+
+      <button type="submit">Generate Feedback</button>
+    </form>
+
+    <div id="loading" class="hidden">Generating response...</div>
+
+    <div id="results" class="hidden">
+      <h2>Feedback</h2>
+
+      <div class="result-box">
+        <h3>Counterargument</h3>
+        <p id="counterargument"></p>
+      </div>
+
+      <div class="result-box">
+        <h3>Strengths</h3>
+        <p id="strengths"></p>
+      </div>
+
+      <div class="result-box">
+        <h3>Weaknesses</h3>
+        <p id="weaknesses"></p>
+      </div>
+
+      <div class="result-box">
+        <h3>Suggestions</h3>
+        <p id="suggestions"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
