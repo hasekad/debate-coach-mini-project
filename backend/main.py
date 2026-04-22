@@ -1,10 +1,12 @@
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
-from dotenv import load_dotenv
-from together import Together
 import os
 import json
+from typing import Any
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+from together import Together
 
 load_dotenv()
 
@@ -19,10 +21,7 @@ app.add_middleware(
 )
 
 api_key = os.getenv("TOGETHER_API_KEY")
-if not api_key:
-    raise ValueError("TOGETHER_API_KEY not found in .env file")
-
-client = Together(api_key=api_key)
+client = Together(api_key=api_key) if api_key else None
 
 class DebateRequest(BaseModel):
     topic: str
@@ -35,12 +34,44 @@ class DebateResponse(BaseModel):
     weaknesses: str = Field(description="What is weak or missing in the user's argument")
     suggestions: str = Field(description="How the user can improve the argument")
 
+
+def _extract_json_object(raw_text: str) -> str:
+    """Extract a JSON object from model output, including fenced blocks."""
+    if not raw_text:
+        raise ValueError("Empty model response.")
+
+    cleaned = raw_text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.strip("`").strip()
+        if cleaned.lower().startswith("json"):
+            cleaned = cleaned[4:].strip()
+
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+    if start == -1 or end == -1 or end < start:
+        raise ValueError("No JSON object found in model response.")
+
+    return cleaned[start : end + 1]
+
+
+def _parse_debate_response(raw_text: str) -> dict[str, Any]:
+    json_text = _extract_json_object(raw_text)
+    parsed = json.loads(json_text)
+    validated = DebateResponse.model_validate(parsed)
+    return validated.model_dump()
+
 @app.get("/")
 def read_root():
     return {"message": "Debate Coach API is running"}
 
 @app.post("/debate-coach")
 def debate_coach(data: DebateRequest):
+    if not api_key or not client:
+        raise HTTPException(
+            status_code=500,
+            detail="TOGETHER_API_KEY is missing. Add it to backend/.env and restart the server.",
+        )
+
     try:
         response = client.chat.completions.create(
             model="Qwen/Qwen3.5-9B",
@@ -72,7 +103,18 @@ def debate_coach(data: DebateRequest):
         )
 
         content = response.choices[0].message.content
-        return json.loads(content)
+        return _parse_debate_response(content)
+
+    except json.JSONDecodeError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Model returned malformed JSON: {str(e)}",
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Model output could not be parsed: {str(e)}",
+        )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
