@@ -1,6 +1,9 @@
 const form = document.getElementById("debateForm");
 const loading = document.getElementById("loading");
 const results = document.getElementById("results");
+const errorBox = document.getElementById("error");
+
+const API_BASE_URL = "http://127.0.0.1:8001";
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -11,9 +14,11 @@ form.addEventListener("submit", async (event) => {
 
   loading.classList.remove("hidden");
   results.classList.add("hidden");
+  errorBox.classList.add("hidden");
+  errorBox.textContent = "";
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/debate-coach", {
+    const response = await fetch(`${API_BASE_URL}/debate-coach`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -26,6 +31,9 @@ form.addEventListener("submit", async (event) => {
     });
 
     const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.detail || "Backend request failed.");
+    }
     console.log(data);
 
     document.getElementById("counterargument").textContent = data.counterargument || "No response";
@@ -35,7 +43,8 @@ form.addEventListener("submit", async (event) => {
 
     results.classList.remove("hidden");
   } catch (error) {
-    alert("Something went wrong. Check that your backend is running.");
+    errorBox.textContent = `Error: ${error.message}`;
+    errorBox.classList.remove("hidden");
     console.error(error);
   } finally {
     loading.classList.add("hidden");

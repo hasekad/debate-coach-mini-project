@@ -52,6 +52,15 @@ button:hover {
   border-radius: 8px;
 }
 
+.error-box {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #ffecec;
+  color: #b00020;
+  border: 1px solid #f5b5c0;
+}
+
 .hidden {
   display: none;
 }
