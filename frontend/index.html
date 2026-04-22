@@ -3,60 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Debate Coach</title>
+  <title>AI Debate Coach</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <p class="eyebrow">Collegiate Debate Workshop</p>
-    <h1>AI Debate Coach</h1>
-    <p class="intro">Practice argumentation with structured critique inspired by a seminar-style debate classroom.</p>
+  <div class="arena-lights" aria-hidden="true"></div>
+  <main class="container">
+    <section class="hero panel">
+      <div class="hero-copy">
+        <h1>AI Debate Coach</h1>
+        <p class="hero-subtitle">
+          Train like a competitive speaker with side-aware strategy feedback, rebuttal simulation, and real-time argument intelligence.
+        </p>
+      </div>
+      <div class="stance-board">
+        <p class="stance-label" id="stanceLabel">Choose a side to begin</p>
+        <div class="stance-track" aria-hidden="true">
+          <span class="stance-for">FOR</span>
+          <span class="stance-against">AGAINST</span>
+          <div class="stance-needle" id="stanceNeedle"></div>
+        </div>
+      </div>
+    </section>
 
-    <form id="debateForm">
-      <label for="topic">Topic</label>
-      <input type="text" id="topic" name="topic" placeholder="e.g. AI should be used in education" required />
+    <section class="grid-layout">
+      <div class="panel panel-form">
+        <form id="debateForm">
+          <label for="topic">Debate Topic</label>
+          <input type="text" id="topic" name="topic" placeholder="e.g. AI should be used in education" required />
 
-      <label for="side">Side</label>
-      <select id="side" name="side" required>
-        <option value="">Select a side</option>
-        <option value="for">For</option>
-        <option value="against">Against</option>
-      </select>
+          <label for="side">Your Position</label>
+          <select id="side" name="side" required>
+            <option value="">Select a side</option>
+            <option value="for">For</option>
+            <option value="against">Against</option>
+          </select>
 
-      <label for="argument">Your Argument</label>
-      <textarea id="argument" name="argument" rows="6" placeholder="Type your argument here..." required></textarea>
+          <label for="argument">Your Opening Argument</label>
+          <textarea id="argument" name="argument" rows="8" placeholder="Type your strongest case here..." required></textarea>
 
-      <button type="submit">Review My Argument</button>
-    </form>
+          <button type="submit" id="submitBtn">
+            <span>Generate Coaching Report</span>
+          </button>
+        </form>
 
-    <div id="loading" class="loading hidden">Consulting debate notes and generating feedback...</div>
+        <div class="micro-insights">
+          <div class="insight-pill">
+            <span class="insight-label">Word Count</span>
+            <strong id="wordCount">0</strong>
+          </div>
+          <div class="insight-pill">
+            <span class="insight-label">Sentence Count</span>
+            <strong id="sentenceCount">0</strong>
+          </div>
+          <div class="insight-pill">
+            <span class="insight-label">Confidence Pulse</span>
+            <strong id="confidencePulse">Low</strong>
+          </div>
+        </div>
+
+        <div class="dna-panel">
+          <p class="dna-title">Argument DNA</p>
+          <div class="dna-row">
+            <span>Logic</span>
+            <strong id="logicScore">0%</strong>
+          </div>
+          <div class="dna-row">
+            <span>Emotion</span>
+            <strong id="emotionScore">0%</strong>
+          </div>
+          <div class="dna-row">
+            <span>Credibility</span>
+            <strong id="credibilityScore">0%</strong>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel panel-side">
+        <h2>Debater Tips & Advice</h2>
+        <p class="panel-description">Live coaching reminders to sharpen your structure, delivery, and rebuttal readiness.</p>
+        <ul id="debaterTips" class="prompt-list">
+          <li>Set a topic and side to unlock personalized advice.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <p>Preparing your rebuttal map...</p>
+    </div>
     <div id="error" class="error-box hidden"></div>
 
-    <div id="results" class="hidden">
-      <h2>Feedback Summary</h2>
+    <section id="results" class="hidden">
+      <h2>Coaching Output</h2>
 
-      <div class="result-box">
-        <h3>Counterargument</h3>
-        <p id="counterargument"></p>
-      </div>
+      <div class="result-grid">
+        <article class="result-box">
+          <h3>Counterargument Simulation</h3>
+          <p id="counterargument"></p>
+        </article>
 
-      <div class="result-box">
-        <h3>Strengths</h3>
-        <p id="strengths"></p>
-      </div>
+        <article class="result-box">
+          <h3>Your Strengths</h3>
+          <p id="strengths"></p>
+        </article>
 
-      <div class="result-box">
-        <h3>Weaknesses</h3>
-        <p id="weaknesses"></p>
-      </div>
+        <article class="result-box">
+          <h3>Pressure Points</h3>
+          <p id="weaknesses"></p>
+        </article>
 
-      <div class="result-box">
-        <h3>Suggestions</h3>
-        <p id="suggestions"></p>
+        <article class="result-box">
+          <h3>Upgrade Suggestions</h3>
+          <p id="suggestions"></p>
+        </article>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script src="script.js"></script>
-</body>
-</html>
+  </body>
+  </html>
