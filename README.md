@@ -45,6 +45,17 @@ cp .env.example .env
 TOGETHER_API_KEY=your_together_api_key_here
 ```
 
+Optional speed tuning:
+
+```env
+TOGETHER_MODEL=Qwen/Qwen2.5-7B-Instruct-Turbo
+TOGETHER_MAX_TOKENS=220
+TOGETHER_TEMPERATURE=0.2
+```
+
+- Lower `TOGETHER_MAX_TOKENS` for faster responses.
+- Use a faster Together model in `TOGETHER_MODEL` if desired.
+
 ## How To Run
 
 From the project root, run backend:

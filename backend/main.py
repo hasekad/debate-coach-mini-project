@@ -23,6 +23,10 @@ app.add_middleware(
 api_key = os.getenv("TOGETHER_API_KEY")
 client = Together(api_key=api_key) if api_key else None
 
+MODEL_NAME = os.getenv("TOGETHER_MODEL", "Qwen/Qwen2.5-7B-Instruct-Turbo")
+MAX_TOKENS = int(os.getenv("TOGETHER_MAX_TOKENS", "220"))
+TEMPERATURE = float(os.getenv("TOGETHER_TEMPERATURE", "0.2"))
+
 class DebateRequest(BaseModel):
     topic: str
     side: str
@@ -60,6 +64,28 @@ def _parse_debate_response(raw_text: str) -> dict[str, Any]:
     validated = DebateResponse.model_validate(parsed)
     return validated.model_dump()
 
+
+def _create_messages(data: DebateRequest) -> list[dict[str, str]]:
+    return [
+        {
+            "role": "system",
+            "content": (
+                "You are an AI debate coach. "
+                "Keep each field concise and actionable (1-2 short sentences). "
+                f"Only answer in JSON and follow this schema: {json.dumps(DebateResponse.model_json_schema())}"
+            ),
+        },
+        {
+            "role": "user",
+            "content": (
+                f"Topic: {data.topic}\n"
+                f"Side: {data.side}\n"
+                f"Argument: {data.argument}\n\n"
+                "Provide a strong counterargument, strengths, weaknesses, and suggestions."
+            ),
+        },
+    ]
+
 @app.get("/")
 def read_root():
     return {"message": "Debate Coach API is running"}
@@ -74,25 +100,10 @@ def debate_coach(data: DebateRequest):
 
     try:
         response = client.chat.completions.create(
-            model="Qwen/Qwen3.5-9B",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are an AI debate coach. "
-                        f"Only answer in JSON and follow this schema: {json.dumps(DebateResponse.model_json_schema())}"
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": (
-                        f"Topic: {data.topic}\n"
-                        f"Side: {data.side}\n"
-                        f"Argument: {data.argument}\n\n"
-                        "Provide a strong counterargument, strengths, weaknesses, and suggestions."
-                    ),
-                },
-            ],
+            model=MODEL_NAME,
+            messages=_create_messages(data),
+            max_tokens=MAX_TOKENS,
+            temperature=TEMPERATURE,
             response_format={
                 "type": "json_schema",
                 "json_schema": {
@@ -103,6 +114,15 @@ def debate_coach(data: DebateRequest):
         )
 
         content = response.choices[0].message.content
+        if not content:
+            fallback_response = client.chat.completions.create(
+                model=MODEL_NAME,
+                messages=_create_messages(data),
+                max_tokens=MAX_TOKENS,
+                temperature=TEMPERATURE,
+            )
+            content = fallback_response.choices[0].message.content
+
         return _parse_debate_response(content)
 
     except json.JSONDecodeError as e:

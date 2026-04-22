@@ -8,8 +8,9 @@
 </head>
 <body>
   <div class="container">
+    <p class="eyebrow">Debate Studio</p>
     <h1>AI Debate Coach</h1>
-    <p>Enter a topic, choose your side, and type your argument to get feedback.</p>
+    <p class="intro">Enter a topic, choose your side, and submit your argument for structured feedback.</p>
 
     <form id="debateForm">
       <label for="topic">Topic</label>
@@ -28,11 +29,11 @@
       <button type="submit">Generate Feedback</button>
     </form>
 
-    <div id="loading" class="hidden">Generating response...</div>
+    <div id="loading" class="loading hidden">Generating scholarly feedback...</div>
     <div id="error" class="error-box hidden"></div>
 
     <div id="results" class="hidden">
-      <h2>Feedback</h2>
+      <h2>Feedback Summary</h2>
 
       <div class="result-box">
         <h3>Counterargument</h3>
