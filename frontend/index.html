@@ -8,8 +8,9 @@
 </head>
 <body>
   <div class="container">
+    <p class="eyebrow">Collegiate Debate Workshop</p>
     <h1>AI Debate Coach</h1>
-    <p>Enter a topic, choose your side, and type your argument to get feedback.</p>
+    <p class="intro">Practice argumentation with structured critique inspired by a seminar-style debate classroom.</p>
 
     <form id="debateForm">
       <label for="topic">Topic</label>
@@ -25,14 +26,14 @@
       <label for="argument">Your Argument</label>
       <textarea id="argument" name="argument" rows="6" placeholder="Type your argument here..." required></textarea>
 
-      <button type="submit">Generate Feedback</button>
+      <button type="submit">Review My Argument</button>
     </form>
 
-    <div id="loading" class="hidden">Generating response...</div>
+    <div id="loading" class="loading hidden">Consulting debate notes and generating feedback...</div>
     <div id="error" class="error-box hidden"></div>
 
     <div id="results" class="hidden">
-      <h2>Feedback</h2>
+      <h2>Feedback Summary</h2>
 
       <div class="result-box">
         <h3>Counterargument</h3>
